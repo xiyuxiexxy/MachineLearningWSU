@@ -1,0 +1,8 @@
+install.packages("e1071")
+library('e1071')
+Data<-read.table("hw4exptdata",sep=",")
+
+Data<-unique(Data)
+Data<-Data[order(Data[,17]),]
+
+

@@ -1,0 +1,94 @@
+%\usepackage{epsfig}
+
+\documentclass[11pt]{article}%
+\usepackage{amsfonts,amsmath,graphicx}%
+\usepackage{amsmath}%
+\setcounter{MaxMatrixCols}{30}%
+\usepackage{amsfonts}%
+\usepackage{amssymb}%
+\usepackage{fullpage}
+%TCIDATA{OutputFilter=latex2.dll}
+%TCIDATA{Version=5.50.0.2953}
+%TCIDATA{LastRevised=Wednesday, February 13, 2008 15:17:18}
+%TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
+%TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
+%TCIDATA{BibliographyScheme=Mansual}
+%BeginMSIPreambleData
+\providecommand{\U}[1]{\protect\rule{.1in}{.1in}}
+%EndMSIPreambleData
+\begin{document}
+\input{preamble.tex}
+
+\lecture{hw 2}{Xiyu Xie}
+
+%%%% body goes in here %%%%
+
+
+\section{Problem 1}
+
+$l(p_1, p_2, ..., p_k) = log( \prod_{t=1}^N \prod_{i=1}^K p_i^x_i ) = \sum \sum x_i log p_i $\newline
+
+use Lagrange mutiplier \newline
+	maximize $l(p_1, p_2, ..., p_k)$ \newline
+	subject to $\sum p_i =1 $ \newline
+$L(p_1, p_2, ..., p_k , \lambda) = l(p_1, p_2, ...,p_k ) + \lambda (\sum p_i -1 ) $\newline
+By posing all the derivatives to be 0, we get \newline
+	$\hat(p_i) = \frac{\sum x_i}{N} $ \newline
+
+
+\section{Problem 2}
+
+$f(\theta |x_1,x_2,...,x_n) = \frac{1}{(2\pi \sigma^2 )^(n/2)}
+exp 
+( 
+	\frac{-1}{2\sigma^2} \sum(x_i-\theta)^2 
+	-\frac{1}{2\sigma_0^2}(\theta-\mu_0)^2 
+)
+
+$
+modify and get
+\theta(x_1,x_2,...,x_n) = \frac{\sum x_i \sigma_0^2 +\mu_0\sigma^2} {\sigma^2+n*\sigma_0^2}
+\section{Problem 3}
+
+$P(M) =1\%$ 	\newline
+$P(B) =30\% $	\newline
+$P(O) = 69\% $
+
+$P(+| M) =95\% $	 \newline
+$P(-|M) =5 \% $		 \newline
+
+%$P(+| B) =2.5\%$	\newline
+%$P(+| O) =2.5\%$	\newline
+
+$P(-|~M)=95\% $ 	\newline
+$P(~M| -) =97.5\% $	 \newline
+
+$P(M|-) =2.5\% $	\newline
+
+
+$P(-)= P(-|M) *P(M) +P(-|~M)*P(~M) =0.05 *0.01 +0.95*0.99 =0.941$
+$P(+) =1-P(-)=0.059$
+or
+$P(-)= P(-|~M)*P(~M) /P(~M|-)= 0.95*0.99/0.975= 0.965$ \newline
+$P(+) =1-P(-)=0.035$			\newline
+
+$P(M|+)=P(+|M)*P(M)/P(+)= 0.95*0.01/0.059=0.16 or 0.27
+
+\section{Problem 4}
+(c)0.9225352
+(d)0.9225352
+(e)0.7605634	decreased by overfitting
+
+\section{Problem 5}
+(b)Euclidean is better than manhattan
+(c)not accuracy with k>=5
+
+
+
+
+
+
+
+
+
+\end{document}

@@ -1,0 +1,14 @@
+
+
+noutput<-length(unique(Data[,17]))
+label<-array(dim=c(N,noutput))
+
+for(i in 1:N)
+{
+	l<-Data[i,17]
+	label[i,]<-rep(0,noutput)
+	label[i,l]=1
+}
+
+
+

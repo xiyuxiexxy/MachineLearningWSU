@@ -1,0 +1,124 @@
+Data<-read.table("agaricus-lepiota.data", sep=",")
+Data<-unique(Data)
+Data<-Data[order(Data[,1]),]
+c<-ncol(Data)
+r<-nrow(Data)
+numData<-array(dim=c(r,c))
+for( i in 1:c)
+{
+	numData[,i]= as.numeric(Data[,i])
+}
+
+
+
+cal_entropy <- function(set)
+{
+	if(is.vector(set)==TRUE)
+	{
+		return(0)
+
+	}
+	
+	sum<-sum(set[,1])
+	
+	r<-nrow(set)
+	n2<-sum-r
+	p2<-n2/r	
+	n1<-r-n2
+	p1<-n1/r
+
+	result<--p1*log(p1,base=2)-p2*log(p2,base=2)
+	if(is.na(result)==TRUE)
+	{
+		result=0
+	}
+	
+	return(result)
+}
+
+
+cal_gain<-function(set,index)
+{
+	##print("gain")
+	value<-unique(set[,index])
+	nvalue<- length(value)
+
+	result=cal_entropy(set)
+	##print("entropy")
+	for(i in 1:nvalue)
+	{
+		newset<-set[set[,index]==value[i],]
+		nnewset<-nrow(newset)
+	
+		##print(newset)
+		##print("gain")
+		gain<-cal_entropy(newset)*nnewset/nrow(set)
+		##print("entropy")
+		
+		##print(gain)
+
+		if(length(gain)==0)
+			gain=0
+		if(is.na(gain)==FALSE)
+		{
+			result=result-gain	
+			
+		}
+		
+		
+	}
+	if(result<0)
+	
+	result=0
+	
+	return(result)
+
+}
+
+
+
+
+find_max<-function(set,attr)
+{
+	nattr<-length(attr)
+	
+	index=1
+	##print("find")
+	max=cal_gain(set,attr[1])
+	##print("gain")
+	
+	for(i in 2:nattr)
+	{
+		gain=cal_gain(set,attr[i])
+		if( gain>max)
+			index=i
+	}
+	
+	return(index)
+}
+
+
+attr<-c(2:23)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

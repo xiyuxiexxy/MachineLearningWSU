@@ -1,0 +1,111 @@
+# Read Data In
+data <- read.delim("../data1", header = FALSE, sep = ",")
+
+# 0) Remove NULL activities and the 11th and 12th attribute
+data.pr <- data[-which(data[,13] == 0),]
+data.pr <- data[,-(c(1,11,12))]
+
+# Leave one day out
+print('INITIALIZING')
+tst <- data.pr[1:86400,]
+tr <- rbind(data.pr[345601:432000,],data.pr[604801:691200,],data.pr[691201:777600,],data.pr[777601:864000,],data.pr[864001:950400,],data.pr[950401:1036800,])
+
+prior <- table(tr[,10])/sum(table(tr[,10]))
+
+tr<-tr[-which(data[10]==1),]
+tst<-tst[-which(data[10]==1),]
+
+tr <- as.matrix(tr)
+tst <- as.matrix(tst)
+
+
+
+
+# 1) normalize all attribute (PCA)
+#	using the library princomp
+#	-> store the output on the (-mean) and the egin vector
+#	(WE CAN CONSIDER REDUCE THE DEMENSION IF NEEDED)
+# after seeing the summmary we can drop couple attribute if needed (to improve the training speed)
+print('PCA PCA GO GO PCA')
+tr.pc <- princomp(tr[,-ncol(tr)],score=TRUE);
+
+
+
+
+
+library('mclust')
+# 2) For each activities on each attribute
+#	using the library Mclust
+#	-> store the P(G) and P(G|X)~N(u,v)
+print('GAUSSIAN GAUSSIAN GO GO GAUSSIAN')
+act<-NULL
+for(i in 1:12)
+{
+	print('GET 1')
+	att <- NULL
+	for( j in 1:9)
+	{
+		x<-NULL
+		x.cl <- NULL
+		x <- tr.pc$score[which(tr[,10] == i),j]
+		if(length(x) != 0)
+		{
+			x.cl <- Mclust(x,5)
+		}
+		att<-c(att, list(x.cl))
+	}
+	act[[i]] <- att
+}
+
+
+
+# Validation: One day's data
+# 0) normalize all attribute (PCA)
+# using the exisits (-mean) and the egin vector
+tst.pc<-tst[,-10]
+for(i in 1:ncol(tst.pc))
+{
+	tst.pc[,i] <- tst[,i]-tr.pc$center[i]
+}
+tst.pc <- tst.pc %*% tr.pc$loadings
+
+#prior <- table(tr[,10])/sum(table(tr[,10]))
+prior <- c(prior[1:6],0,prior[7:11])
+
+# 1) find Cmap for each activities using Naive Bayes Classifier
+row<- nrow(tst.pc)
+col<- ncol(tst.pc)
+guess<-rep(0,row);
+for( i in 1:row)
+{
+	p<-rep(-999999999,12);
+	for( k in c(2:6,8:12))
+	{
+		for( j in 1:col )
+		{
+			post <- 0
+			for(z in 1:act[[k]][[j]]$G)
+			{
+				# p = P(x1..xj..xn|C=k)
+				# p = P(x1|c1) + p(x2|Ck) + ...+ p(xj|Ck) +...
+				# p(xj|ck) = p(xj | Gkd ) * p(Gkd)
+				# log(p(xj|ck)) = log(p(Gkd)) + log(p(xj|Gkd))
+				p[k] <- p[k]+
+				log(summary(act[[k]][[j]])$pro[z])-
+				log(sqrt(summary(act[[k]][[j]])$variance[z]))-
+				(1/2)*( (tst.pc[i,j] - summary(act[[k]][[j]])$mean[z] )^2 / summary(act[[k]][[j]])$variance[z] )
+			}			
+		}
+		p[k]<-p[k]+log(prior[k]) # p is udated to P(C=1|x1....xn)
+	}
+	guess[i] <-order(p)[12];
+}
+
+sink('out')
+print(guess)
+print(table(guess==tst[,10]))
+sink()
+
+
+
+
